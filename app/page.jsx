@@ -6,8 +6,7 @@ import Image from "next/image";
 import qs from "qs";
 import { TextField } from "@mui/material";
 import debounce from "lodash.debounce";
-import { Typography } from "@mui/material";
-import { FaRegLightbulb } from 'react-icons/fa'
+import { FaRegLightbulb } from "react-icons/fa";
 
 import { Button } from "./components/Button";
 import GeneratedMeme from "./components/GeneratedMeme";
@@ -191,14 +190,7 @@ export default function Home() {
         className="w-full flex flex-col items-center space-y-6 py-10"
       >
         <div className="w-full flex flex-col items-center space-y-6">
-          <Typography
-            className="text-xl font-semibold text-[#1F2937] shadow-lg "
-            variant="h3"
-            component="h1"
-            align="center"
-          >
-            Choose a popular meme or pick one at random
-          </Typography>
+          <h1 className="text-xl font-semibold text-[#1F2937] shadow-lg ">Choose a popular meme or pick one at random</h1>
 
           <section id="popular-memes" className="flex justify-center space-x-1">
             <div className="scroll-container w-max-[300px] h-[80px] md:w-max-[500px] lg:w-[600px]">
@@ -217,8 +209,15 @@ export default function Home() {
           </section>
 
           <Button onclick={handlePicker}>Pick Random Meme</Button>
-          <button  onClick={() => alert('The left color picker is intended for selecting the text color, while the right color picker is for choosing the outline color. In case the background color is white, it is recommended to set the text color to a darker shade for better visibility.')} className=" p-2 rounded-full text-white bg-[#F2BE22]">
-            <FaRegLightbulb className="animate-ping"/>
+          <button
+            onClick={() =>
+              alert(
+                "The left color picker is intended for selecting the text color, while the right color picker is for choosing the outline color. In case the background color is white, it is recommended to set the text color to a darker shade for better visibility."
+              )
+            }
+            className=" p-2 rounded-full text-white bg-[#F2BE22]"
+          >
+            <FaRegLightbulb className="animate-ping" />
           </button>
         </div>
         {captions.map((caption, index) => (
