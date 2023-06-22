@@ -50,7 +50,8 @@ export default function Home() {
   const [captionErrors, setCaptionErrors] = useState([]);
   const [generated, setGenerated] = useState();
   const [formValid, setFormValid] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDisplayed, setIsDisplayed] = useState();
 
   useEffect(() => {
     const initialCaptions = [...Array(pickImg.box_count)].fill("");
@@ -81,6 +82,7 @@ export default function Home() {
     }));
     setPickImg(pickedImg);
     setCaptions(initialCaptionsWithFeatures);
+    setIsDisplayed(false)
   };
 
   const validateCaption = (caption) => {
@@ -107,7 +109,30 @@ export default function Home() {
     const newCaptionErrors = [...captionErrors];
     newCaptionErrors[i] = error;
     setCaptionErrors(newCaptionErrors);
-    setCaptions(newCaptions);
+    // setCaptions(newCaptions);
+    const formData = {
+      username: "MedetDiler",
+      password: "123123asd.",
+      template_id: pickImg.id,
+      boxes: newCaptions.map((capt) => ({
+        text: capt.text,
+        color: capt.color,
+        outline_color: capt.outline_color,
+      })),
+    };
+
+    const serializedFormData = qs.stringify(formData);
+    fetch("https://api.imgflip.com/caption_image", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: serializedFormData,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setIsDisplayed(data);
+      });
 
     const isFormValid = newCaptions.every(
       (caption) => validateCaption(caption) === ""
@@ -146,7 +171,7 @@ export default function Home() {
     };
 
     const serializedFormData = qs.stringify(formData);
-    setIsLoading(true)
+    setIsLoading(true);
     fetch("https://api.imgflip.com/caption_image", {
       method: "POST",
       headers: {
@@ -156,8 +181,8 @@ export default function Home() {
     })
       .then((res) => res.json())
       .then((data) => {
-        setIsLoading(false)
-        setGenerated(data)
+        setIsLoading(false);
+        setGenerated(data);
       });
   };
 
@@ -181,12 +206,21 @@ export default function Home() {
       <div id="left" className="flex justify-center">
         {pickImg && (
           <div className=" shadow-xl bg-white h-auto">
-            <Image
-              src={pickImg.url}
-              width={pickImg.width}
-              height={pickImg.height}
-              alt={pickImg.name}
-            />
+            {isDisplayed ? (
+              <Image
+                src={isDisplayed?.data?.url}
+                width={pickImg.width}
+                height={pickImg.height}
+                alt={isDisplayed?.data?.url}
+              />
+            ) : (
+              <Image
+                src={pickImg.url}
+                width={pickImg.width}
+                height={pickImg.height}
+                alt={pickImg.name}
+              />
+            )}
           </div>
         )}
       </div>
@@ -196,14 +230,19 @@ export default function Home() {
         className="w-full flex flex-col items-center space-y-6 py-10"
       >
         <div className="w-full flex flex-col items-center space-y-6">
-          <h1 className="text-xl font-semibold text-[#1F2937] shadow-lg ">Choose a popular meme or pick one at random</h1>
+          <h1 className="text-xl font-semibold text-[#1F2937] shadow-lg ">
+            Choose a popular meme or pick one at random
+          </h1>
 
           <section id="popular-memes" className="flex justify-center space-x-1">
             <div className="scroll-container w-max-[300px] h-[80px] md:w-max-[500px] lg:w-[600px]">
               {memes.map((meme) => (
                 <Image
                   className="cursor-pointer"
-                  onClick={() => setPickImg(meme)}
+                  onClick={() => {
+                    setPickImg(meme)
+                    setIsDisplayed(false)
+                  }}
                   key={meme.id}
                   src={meme.url}
                   width={50}
