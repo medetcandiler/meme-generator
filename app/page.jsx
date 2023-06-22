@@ -10,6 +10,7 @@ import { FaRegLightbulb } from "react-icons/fa";
 
 import { Button } from "./components/Button";
 import GeneratedMeme from "./components/GeneratedMeme";
+import Loader from "./components/Loader";
 
 const fetchImages = async () => {
   const res = await axios.get("https://api.imgflip.com/get_memes");
@@ -49,6 +50,7 @@ export default function Home() {
   const [captionErrors, setCaptionErrors] = useState([]);
   const [generated, setGenerated] = useState();
   const [formValid, setFormValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const initialCaptions = [...Array(pickImg.box_count)].fill("");
@@ -144,7 +146,7 @@ export default function Home() {
     };
 
     const serializedFormData = qs.stringify(formData);
-
+    setIsLoading(true)
     fetch("https://api.imgflip.com/caption_image", {
       method: "POST",
       headers: {
@@ -153,7 +155,10 @@ export default function Home() {
       body: serializedFormData,
     })
       .then((res) => res.json())
-      .then((data) => setGenerated(data));
+      .then((data) => {
+        setIsLoading(false)
+        setGenerated(data)
+      });
   };
 
   const resetHandler = () => {
@@ -169,7 +174,8 @@ export default function Home() {
 
   return (
     <div className="z-0 container mx-auto flex flex-row justify-center bg-white border border-slate-300  rounded-md">
-      {generated && (
+      {isLoading && <Loader />}
+      {!isLoading && generated && (
         <GeneratedMeme setGenerated={setGenerated} generated={generated} />
       )}
       <div id="left" className="flex justify-center">
